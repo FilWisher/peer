@@ -27,5 +27,15 @@ func TestNode(t *testing.T) {
 
 func TestComm(t *testing.T) {
   node_one.Connect(node_two.Address)
+  <-node_two.Ready
   node_two.Connect(node_one.Address)
+  <-node_one.Ready
+  node_two.Request(node_one.Address, "Hell\n")
+  node_one.Request(node_two.Address, "GOodbyep\n")
+  msg1 := <-node_one.In
+  msg2 := <-node_two.In
+  if node_one.Requests < 1 || node_two.Requests < 1 {
+    t.Errorf("Less than one request received")
+  }
+  fmt.Printf("2 requests - 1: %s\n2: %s\n", msg1, msg2)
 }
